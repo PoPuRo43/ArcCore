@@ -6,7 +6,7 @@ using UnityEngine;
 using ArcCore.Gameplay.Utility;
 using ArcCore.Gameplay.Components;
 using ArcCore.Parsing.Aff;
-using ArcCore.Gameplay.Components.Chunk;
+using ArcCore.Gameplay.Components.Shaders;
 using ArcCore.Utilities.Extensions;
 
 namespace ArcCore.Gameplay.Behaviours.EntityCreation
@@ -65,6 +65,11 @@ namespace ArcCore.Gameplay.Behaviours.EntityCreation
                 //Judge entities
                 float startBpm = Conductor.Instance.GetTimingEventFromTiming(hold.timing, hold.timingGroup).bpm;
                 EntityManager.SetComponentData(holdEntity, ChartIncrTime.FromBpm(hold.timing, hold.endTiming, startBpm, out int comboCount));
+
+                //Shader property setup
+                EntityManager.SetComponentData(holdEntity, new Direction(startBpm));
+                EntityManager.SetComponentData(holdEntity, new Cutoff(Cutoff.No));
+                EntityManager.SetComponentData(holdEntity, new Highlight(Highlight.Normal));
 
                 //Add combo
                 ScoreManager.Instance.maxCombo += comboCount;

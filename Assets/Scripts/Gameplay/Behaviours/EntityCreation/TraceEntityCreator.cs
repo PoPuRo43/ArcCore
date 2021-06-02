@@ -7,6 +7,7 @@ using UnityEngine;
 using ArcCore.Gameplay.Utility;
 using ArcCore.Gameplay.Components;
 using ArcCore.Gameplay.Components.Chunk;
+using ArcCore.Gameplay.Components.Shaders;
 using ArcCore.Parsing.Aff;
 using ArcCore.Utilities.Extensions;
 
@@ -39,7 +40,10 @@ namespace ArcCore.Gameplay.Behaviours.EntityCreation
             EntityManager.ExposeLocalToWorld(traceShadowEntityPrefab);
 
             EntityManager.RemoveComponent<ColorID>(traceNoteEntityPrefab);
+            EntityManager.RemoveComponent<Redmix>(traceNoteEntityPrefab);
+            EntityManager.RemoveComponent<Highlight>(traceNoteEntityPrefab);
             EntityManager.AddComponent(traceNoteEntityPrefab, ComponentType.ReadOnly<ChartTime>());
+            EntityManager.AddComponent(traceShadowEntityPrefab, ComponentType.ReadOnly<ChartTime>());
 
             //TEMPORARY. DISAPPEARTIME IS DEPRECATED AND WILL BE DELETED
             EntityManager.AddComponent(traceNoteEntityPrefab, ComponentType.ReadOnly<DisappearTime>());
@@ -174,6 +178,12 @@ namespace ArcCore.Gameplay.Behaviours.EntityCreation
             EntityManager.SetComponentData<DisappearTime>(traceShadowEntity, new DisappearTime() { value = disappearTime });
 
             EntityManager.SetComponentData<ChartTime>(traceEntity, new ChartTime() { value = time });
+            EntityManager.SetComponentData<ChartTime>(traceShadowEntity, new ChartTime() { value = time });
+
+            //Shader setup
+            var bpm = Conductor.Instance.GetTimingEventFromTiming(time, timingGroup).bpm;
+            EntityManager.SetComponentData(traceEntity, new Direction(bpm));
+            EntityManager.SetComponentData(traceShadowEntity, new Direction(bpm));
         }
 
         private void CreateHeadSegment(AffTrace trace)

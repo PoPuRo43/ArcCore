@@ -9,6 +9,8 @@ using ArcCore.Gameplay.Behaviours;
 using Unity.Rendering;
 using ArcCore.Gameplay.Data;
 using ArcCore.Gameplay.Systems.Judgement;
+using ArcCore.Gameplay.Components.Tags;
+using ArcCore.Gameplay.Components.Shaders;
 
 namespace ArcCore.Gameplay.Systems
 {
@@ -19,55 +21,35 @@ namespace ArcCore.Gameplay.Systems
         {
             EntityManager entityManager = EntityManager;
             int currentTime = Conductor.Instance.receptorTime;
+            NTrackArray<int> tracksHeld = InputManager.Instance.tracksHeld;
 
-            //NativeArray<ArcCompleteState> arcStates = JudgementSystem.Instance.arcStates;
-            /*
-            //ARCS
-            Entities.WithNone<Translation>().ForEach(
-
-                (ref ShaderCutoff cutoff, ref ShaderRedmix redmix, in ColorID color)
-
-                    =>
-
+            //Hold notes
+            Entities.WithNone<HoldLocked>().WithAll<ChartIncrTime>().ForEach(
+                (ref Cutoff cutoff, ref Highlight highlight, in ChartTime time, in ChartLane lane) => 
                 {
-                    redmix.Value = arcStates[color.value].redRoll;
-                    cutoff.Value = arcStates[color.value].alphaRoll; //pls fix 0
-                }
+                    if (tracksHeld[lane.lane] > 0)
+                    {
+                        cutoff.value = Cutoff.Yes;
+                        highlight.value = Highlight.Highlighted;
+                    }
+                    else
+                    {
+                        cutoff.value = Cutoff.No;
+                        highlight.value = Highlight.Gray;
+                    }
+                }  
+            ).Run();
 
-            )
-                .WithName("ArcShaders")
-                .Schedule();
-
-            //TRACES
-            Entities.WithNone<Translation>().ForEach(
-
-                (ref ShaderCutoff cutoff, in ChartTime time)
-
-                    =>
-
+            //Trace notes
+            Entities.WithNone<ChartLane, ChartPosition, ArcData>().ForEach(
+                (ref Cutoff cutoff, in ChartTime time) =>
                 {
-                    cutoff.Value = time.value < currentTime ? 1f : 0f;
+                    if (time.value > currentTime)
+                    {
+                        cutoff.value = Cutoff.Yes;
+                    }
                 }
-
-            )
-                .WithName("TraceShaders")
-                .Schedule();
-
-            //HOLDS
-            Entities.ForEach(
-
-                (ref ShaderCutoff cutoff, in HoldFunnelPtr holdFunnelPtr) //wtf is this garbage. pls talk to me to find out
-
-                    =>
-
-                {
-                    cutoff.Value = (float)holdFunnelPtr.Value->visualState;
-                }
-
-            )
-                .WithName("HoldShaders")
-                .Schedule();
-            */
+            ).Run();
         }
     }
 }
