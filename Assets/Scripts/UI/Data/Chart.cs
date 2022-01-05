@@ -15,8 +15,15 @@ namespace ArcCore.UI.Data
         public string NameRomanized { get; set; }
         public string Artist { get; set; }
         public string ArtistRomanized { get; set; }
+
+        public string Bpm { get; set; }
+        public float Constant { get; set; }
+
+        public int PbScore { get; set; }
+        public ScoreCategory PbGrade { get; set; }
         
-        public string Illustrator { get; set; }
+        public ChartSettings Settings;
+
         public string Charter { get; set; }
 
         public string Background { get; set; }
