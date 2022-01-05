@@ -4,14 +4,13 @@ using System.Linq;
 
 namespace ArcCore.UI.Data
 {
-    public class Level : IArccoreInfo
+    public class Pack : IArccoreInfo
     {
-        public string Directory { get; set; }
         public IList<string> ImportedGlobals { get; set; }
 
-        public Chart[] Charts { get; set; }
+        public Level[] Levels { get; set; }
 
         public IEnumerable<string> GetReferences()
-            => Charts.SelectMany(c => c.GetReferences());
+            => Levels.SelectMany(c => c.GetReferences());
     }
 }
