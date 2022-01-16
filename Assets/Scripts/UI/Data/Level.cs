@@ -1,42 +1,57 @@
-﻿using Newtonsoft.Json;
+﻿using EnumerableUtils;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityCoroutineUtils;
 
 namespace ArcCore.UI.Data
 {
     public class Level : IArccoreInfo
     {
+        public ulong Id { get; set; }
+
         public string Directory { get; set; }
         public IList<string> ImportedGlobals { get; set; }
 
         public Chart[] Charts { get; set; }
-        public Pack pack { get; set; }
+        public Pack Pack { get; set; }
 
-        public Chart GetClosestChart(Difficulty difficulty)
+        public Chart GetClosestChart(DifficultyGroup difficultyGroup)
         {
             Chart result = null;
             float closestDifference = float.PositiveInfinity;
 
             foreach (Chart chart in Charts)
             {
-                if (Math.Abs(chart.Difficulty.Precedence - difficulty.Precedence) < closestDifference)
+                if (Math.Abs(chart.DifficultyGroup.Precedence - difficultyGroup.Precedence) < closestDifference)
                     result = chart;
             }
 
             return result;
         }
 
-        public Chart GetExactChart(Difficulty difficulty)
+        public Chart GetExactChart(DifficultyGroup difficultyGroup)
         {
             foreach (Chart chart in Charts)
             {
-                if (chart.Difficulty.Precedence == difficulty.Precedence)
+                if (chart.DifficultyGroup.Precedence == difficultyGroup.Precedence)
                     return chart;
             }
             return null;
         }
 
-        public IEnumerable<string> GetReferences()
-            => Charts.SelectMany(c => c.GetReferences());
+        public void ModifyReferences(Func<string, string> modifier)
+        {
+            foreach(var c in Charts)
+            {
+                c.SongPath = modifier(c.SongPath);
+                c.ImagePath = modifier(c.ImagePath);
+                c.ChartPath = modifier(c.ChartPath);
+            }
+        }
+
+        public IEnumerable<string> References 
+            => Charts.SelectMultiple(c => c.ImagePath, c => c.SongPath, c => c.ChartPath);
     }
 }
