@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections;
+using ArcCore.UI.Data;
 
 namespace ArcCore.UI.SongSelection
 {
@@ -14,16 +15,18 @@ namespace ArcCore.UI.SongSelection
         [SerializeField] private Image hoverOverlay;
         //others
 
-        private PackCell pack;
+        private Pack pack;
 
         public override void SetCellData(CellDataBase cellDataBase)
         {
             PackCellData packData = cellDataBase as PackCellData;
             this.pack = packData.pack;
-            packTitle.text = packData.Pack.Name;
-            chartCount.text = packData.chartCount;
-            //TODO: set image
-            //others
+            if (pack != null) {
+                packTitle.text = packData.pack.Name;
+                chartCount.text = packData.chartCount.ToString();
+                //TODO: set image
+                //others
+            }
         }
 
         protected override IEnumerator LoadCellFullyCoroutine(CellDataBase cellDataBase)

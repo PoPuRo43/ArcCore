@@ -1,27 +1,31 @@
 using Zeroth.HierarchyScroll;
 using UnityEngine;
 using UnityEngine.UI;
+using ArcCore.UI.Data;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 namespace ArcCore.UI.SongSelection
 {
-    public class SongCell : CellBase, IPointerDownHandler, IPointerUpHandler, IPointerClickHandler
+    public class LevelCell : CellBase, IPointerDownHandler, IPointerUpHandler, IPointerClickHandler
     {
         [SerializeField] private Text title;
         [SerializeField] private Text difficulty;
-        [SerializeField] private Image isPlus;
+        [SerializeField] private Text isPlus;
         [SerializeField] private Image image;
         [SerializeField] private Image hoverOverlay;
         private Level level;
+        private DifficultyItem diffItem;
 
         public override void SetCellData(CellDataBase cellDataBase)
         {
-            SongCellData songData = cellDataBase as SongCellData;
-            title.text = songData.name;
-            difficulty.text = songData.difficulty;
-            if (songData.isPlus) {
-                //TODO: enable isPlus img
-            }
+            LevelCellData songData = cellDataBase as LevelCellData;
+            level = songData.level;
+            title.text = songData.chart.Name;
+
+            diffItem = new DifficultyItem(songData.chart);
+            difficulty.text = diffItem.Text;
+            isPlus.gameObject.SetActive(diffItem.IsPlus);
         }
 
         protected override IEnumerator LoadCellFullyCoroutine(CellDataBase cellDataBase)
