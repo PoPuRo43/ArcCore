@@ -47,6 +47,14 @@ namespace ArcCore.UI.SongSelection
             get => selectedLevel;
             set {
                 selectedLevel = value;
+
+                bool diffIncluded = false;
+                foreach (Chart chart in value.Charts)
+                {
+                    if (chart.DifficultyGroup == selectedDiff) diffIncluded = true;
+                }
+                if (!diffIncluded) selectedDiff = value.GetClosestChart(selectedDiff).DifficultyGroup;
+
                 //TODO FOR FLOOF:
                 //Save the last selected level (per pack)
                 Draw();
@@ -67,22 +75,22 @@ namespace ArcCore.UI.SongSelection
         private void GetData()
         {
             DifficultyGroup pst = new DifficultyGroup() {
-                Color = new Color(),
+                Color = Color.cyan,
                 Name = "Past",
                 Precedence = 0
             };
             DifficultyGroup prs = new DifficultyGroup() {
-                Color = new Color(),
+                Color = Color.green,
                 Name = "Present",
                 Precedence = 10
             };
             DifficultyGroup ftr = new DifficultyGroup() {
-                Color = new Color(),
+                Color = new Color(1,0,1,1),
                 Name = "Future",
                 Precedence = 20
             };
             DifficultyGroup byd = new DifficultyGroup() {
-                Color = new Color(),
+                Color = Color.red,
                 Name = "Beyond",
                 Precedence = 30
             };
@@ -259,6 +267,12 @@ namespace ArcCore.UI.SongSelection
                 List<Chart> charts = selectedLevel.Charts.ToList();
                 diffList.Display(charts, selectedDiff);
             }
+        }
+
+        public void CycleDifficulty()
+        {
+            DifficultyGroup nextGroup = diffList.NextGroup;
+            SelectedDiff = nextGroup;
         }
     } 
 }
